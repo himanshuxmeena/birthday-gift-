@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Birthday Balloon Gift 🎈</title>
+<style>
+body{
+  margin:0;
+  height:100vh;
+  background: linear-gradient(to top,#ffe6f0,#ffd1e3);
+  font-family: Arial, sans-serif;
+  overflow:hidden;
+}
+
+/* Counter */
+.counter-box{
+  position:fixed;
+  top:15px;
+  left:20px;
+  background:#fff;
+  padding:8px 14px;
+  border-radius:20px;
+  font-size:20px;
+  font-weight:bold;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  z-index:10;
+}
+
+/* Card */
+.card{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:420px;
+  padding:25px;
+  background:#fff;
+  border-radius:20px;
+  text-align:center;
+  box-shadow:0 15px 30px rgba(0,0,0,0.2);
+  z-index:5;
+}
+
+#msg{
+  min-height:130px;
+  opacity:0;
+  transition:opacity 0.8s ease;
+}
+
+#msg.show{
+  opacity:1;
+}
+
+/* Balloon */
+.balloon{
+  position:absolute;
+  font-size:48px;
+  cursor:pointer;
+  user-select:none;
+  touch-action: manipulation;
+}
+
+/* Ending overlay */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(255,230,240,0.95);
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:24px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 2s ease;
+  padding:20px;
+  font-weight:bold;
+  color:#ff2f7b;
+}
+.overlay.show{
+  opacity:1;
+}
+
+/* Hearts */
+.heart{
+  position:fixed;
+  font-size:20px;
+  pointer-events:none;
+  user-select:none;
+  animation:floatUp linear forwards;
+}
+
+/* Sparkles */
+.sparkle{
+  position:fixed;
+  font-size:14px;
+  color: #fff;
+  opacity:0.7;
+  pointer-events:none;
+  animation:floatUp linear forwards;
+}
+
+@keyframes floatUp{
+  0%{transform:translateY(0) scale(0.5); opacity:0.8;}
+  50%{transform:translateY(-50vh) scale(1); opacity:1;}
+  100%{transform:translateY(-120vh) scale(0.8); opacity:0;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- Music -->
+<audio id="music" autoplay loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_1c8a8c0c4c.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Counter -->
+<div class="counter-box">🎈 <span id="counter">0 / 14</span></div>
+
+<!-- Card -->
+<div class="card">
+  <h2>Pop the Balloons 🎉</h2>
+  <div id="msg">Balloons will appear…</div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay">
+  <p>🎉 Happy 14th Birthday, Lamha! 🎉</p>
+  <p>Wishing you a day full of laughter,</p>
+  <p>endless joy, and magical moments! 💖</p>
+  <p>May all your dreams shine bright and your smile</p>
+  <p>light up the world just like you do ✨</p>
+  <p>— From Himanshu</p>
+</div>
+
+<script>
+const TOTAL_BALLOONS = 14;
+const TOTAL_BOMBS = 3;
+
+let popped = 0;
+let balloonsLeft = TOTAL_BALLOONS;
+let bombsLeft = TOTAL_BOMBS;
+let gameOver = false;
+let heartsStarted = false;
+
+const messages = [
+  "Today feels special ✨",
+  "Someone amazing was born 🌸",
+  "Your smile matters 😊",
+  "You’re kind 💗",
+  "You’re fun 😄",
+  "You’re unique ✨",
+  "People like you 🤍",
+  "You deserve happiness 🎂",
+  "14 suits you 😌",
+  "You’re special 🌟",
+  "You matter 💫",
+  "Stay happy 🌼",
+  "Someone truly cares 💝",
+  "This day is yours 🎉"
+];
+
+function updateCounter(){
+  document.getElementById("counter").innerText = `${popped} / 14`;
+}
+
+function showMessage(text){
+  const msg = document.getElementById("msg");
+  msg.classList.remove("show");
+  setTimeout(()=>{
+    msg.innerText = text;
+    msg.classList.add("show");
+  },200);
+}
+
+function fadeMusic(){
+  const music = document.getElementById("music");
+  const fade = setInterval(()=>{
+    if(music.volume > 0.05){
+      music.volume -= 0.05;
+    } else {
+      music.pause();
+      clearInterval(fade);
+    }
+  },200);
+}
+
+function startHearts(){
+  if(heartsStarted) return;
+  heartsStarted = true;
+  setInterval(()=>{
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.innerText = "💖";
+    h.style.left = Math.random()*95 + "vw";
+    h.style.fontSize = (15+Math.random()*20) + "px";
+    h.style.animationDuration = (5+Math.random()*5) + "s";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),10000);
+  }, 300);
+}
+
+function startSparkles(){
+  const sparkleInterval = setInterval(()=>{
+    if(popped === TOTAL_BALLOONS) { clearInterval(sparkleInterval); return; }
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    s.innerText = "✨";
+    s.style.left = Math.random()*100 + "vw";
+    s.style.fontSize = (10+Math.random()*20) + "px";
+    s.style.animationDuration = (4+Math.random()*4) + "s";
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),10000);
+  }, 500);
+}
+
+function endGift(){
+  const card = document.querySelector(".card");
+  if(card) card.style.display = "none";
+
+  fadeMusic();
+  document.getElementById("overlay").classList.add("show");
+  startHearts();
+}
+
+function spawnObject(){
+  if(gameOver) return;
+  if(balloonsLeft === 0 && bombsLeft === 0) return;
+
+  const el = document.createElement("div");
+  el.className = "balloon";
+  el.style.left = Math.random()*90 + "vw";
+  el.style.bottom = "-60px";
+
+  let isBomb = false;
+
+  if(bombsLeft > 0 && Math.random() < 0.25){
+    isBomb = true;
+    bombsLeft--;
+    el.innerText = "💣";
+  } else if(balloonsLeft > 0){
+    balloonsLeft--;
+    el.innerText = "🎈";
+  } else return;
+
+  // Mobile + PC support
+  el.onclick = el.ontouchstart = () => {
+    if(gameOver) return;
+
+    if(isBomb){
+      el.innerText = "💥";
+      showMessage("💥 Oops! Not this one 😅");
+      gameOver = true;
+      setTimeout(endGift, 1500);
+    } else {
+      el.innerText = "💥";
+      popped++;
+      updateCounter();
+      showMessage(messages[popped-1]);
+
+      if(popped === TOTAL_BALLOONS){
+        setTimeout(endGift, 2000);
+      }
+    }
+    setTimeout(()=>el.remove(),200);
+  };
+
+  el.animate(
+    [{transform:"translateY(0)"},{transform:"translateY(-120vh)"}],
+    {duration:12000, fill:"forwards"}
+  );
+
+  document.body.appendChild(el);
+}
+
+setInterval(spawnObject,2300);
+startSparkles();
+updateCounter();
+showMessage("Balloons will appear…");
+</script>
+
+</body>
+</html>
